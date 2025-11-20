@@ -1,0 +1,27 @@
+📘 Artifact Set A: The Owner's Manual (Layman's Guide)
+Project Name: The "Wise" Adaptive Trading Platform Core Philosophy: "Conservative Aggression" — Aggressively hunt for profit, conservatively manage risk. Never incur a total loss.
+
+1. How It Works (The Anatomy)
+Think of this system not as a computer program, but as a Digital Employee with four distinct parts:
+
+The Brain (State Manager): This is the central nervous system. It holds the current "truth" of the market. It is fast, efficient, and connects everything.
+
+The Eyes (External Intelligence): It reads news, checks sentiment, and looks at "life events" (earnings, wars, rate cuts) to tell the Brain if the market is safe or dangerous.
+
+The Memory (Wisdom Builder): This is the unique feature. Every night, it reviews every trade. If it lost money, it asks "Why?" and adjusts its confidence. It learns like a human, getting smarter over time.
+
+The Hands (Execution): This part places the trades. It has a "tremor filter" (Circuit Breaker). If the system tries to lose too much money, the Hands physically lock up and refuse to trade.
+
+2. The Strategies (How It Makes Money)
+Mean Reversion (The Rubber Band): Buys when a stock is stretched too far down, expecting it to snap back.
+
+Trend Following (The Surfer): Spots a wave (trend) forming and rides it until it breaks.
+
+Stat Arb (The Twin): Looks at two related stocks (like Coke vs. Pepsi). If they drift apart, it bets they will come back together.
+
+Options Specialist: Takes quick profits. It doesn't wait for the jackpot; it takes the money off the table when the math says "good enough."
+
+3. Why It Is Safe
+The Circuit Breaker: A hard-coded safety switch. If daily losses hit $500 (or your set limit), the system shuts down. No AI hallucination can override this.
+
+The "Tremor" Filter: It ignores "noisy" data. It waits for clear, strong signals before acting.

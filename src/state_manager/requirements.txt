@@ -1,0 +1,75 @@
+flask==3.0.0
+gunicorn==21.2.0
+redis==5.0.1
+msgpack==1.0.7
+
+`src/state_manager/Dockerfile`
+```dockerfile
+FROM python:3.10-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY main.py .
+CMD ["gunicorn", "--bind", ":8080", "--workers", "1", "--threads", "8", "main:app"]
+
+`src/state_manager/main.py`
+
+http://googleusercontent.com/immersive_entry_chip/3
+
+#### B. Strategy Engine (The Logic)
+
+`src/strategy_engine/requirements.txt`
+```text
+flask==3.0.0
+gunicorn==21.2.0
+pandas==2.1.4
+numpy==1.26.3
+ta-lib-binary==0.4.0
+
+`src/strategy_engine/Dockerfile`
+```dockerfile
+FROM python:3.10-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY main.py .
+CMD ["gunicorn", "--bind", ":8080", "--workers", "1", "--threads", "8", "main:app"]
+
+`src/strategy_engine/main.py`
+
+http://googleusercontent.com/immersive_entry_chip/4
+
+#### C. External Intelligence (The Eyes)
+
+`src/external_intelligence/requirements.txt`
+```text
+flask==3.0.0
+gunicorn==21.2.0
+google-generativeai==0.3.2
+
+`src/external_intelligence/Dockerfile`
+```dockerfile
+FROM python:3.10-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY main.py .
+CMD ["gunicorn", "--bind", ":8080", "--workers", "1", "--threads", "8", "main:app"]
+
+`src/external_intelligence/main.py`
+
+http://googleusercontent.com/immersive_entry_chip/5
+
+---
+
+### 🚀 How to Push from VS Code
+
+1.  **Create the folders and files** listed above on your computer.
+2.  **Open VS Code** in that folder (`digital-trader-bot`).
+3.  Open the **Source Control** tab (left sidebar).
+4.  Type a message: "Initial MVP Commit".
+5.  Click **Commit**.
+6.  Click **Publish Branch** (or Push).
+7.  It will ask you to sign in to GitHub. Follow the prompt.
+
+Once this is done, your Cloud Build trigger (which we set up earlier) will fire, and the system will go live.
