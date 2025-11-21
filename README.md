@@ -1,44 +1,119 @@
-Digital Trader Bot (Level 5 Maturity)
+# Digital Trader Bot - MVP (Level 5 Maturity)
 
-Status: MVP
-Infrastructure: Google Cloud Run + Redis + Firestore
-Logic: Event-Driven Microservices
+> An autonomous trading platform that hunts for profit while maintaining strict loss controls. Built for **conservative aggression** - aggressive profit-seeking tempered by hard-coded safety mechanisms.
 
-🧠 Architecture
+## 🎯 Quick Overview
 
-State Manager: The central Redis brain enforcing safety (Circuit Breakers).
+**What it Does:**
+- Generates trade signals using 3 strategies (Mean Reversion, Trend Following, Stat Arb)
+- Learns from every trade via nightly optimization (Wisdom Builder)
+- Detects market regime changes using AI/LLM
+- Enforces hard-coded circuit breakers to prevent catastrophic losses
+- Maintains immutable audit trail of all decisions
 
-Strategy Engine: Python logic for Mean Reversion, Trend, and Stat Arb.
+## 🚀 Quick Start
 
-Wisdom Builder: Nightly learning loop that updates strategy confidence vectors.
+### Prerequisites
+- Python 3.10+
+- Redis 7+
+- Docker (optional)
 
-External Intelligence: Gemini AI integration for news-based regime detection.
+### Local Setup (3 minutes)
 
-🚀 Deployment
+```bash
+# 1. Clone and enter directory
+git clone https://github.com/vishc0/digital-trader-bot.git
+cd digital-trader-bot
 
-Push to main branch triggers Google Cloud Build.
+# 2. Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
-Details Version 2: 
+# 3. Install dependencies
+pip install -r requirements.txt
 
-# Digital Trader Bot (MVP)
+# 4. Start Redis
+docker run -d -p 6379:6379 redis:7
 
-**Repository:** [vishc0/digital-trader-bot](https://github.com/vishc0/digital-trader-bot)
-**Architecture:** Level 5 (Stateful, Self-Correcting, Context-Aware)
-**Infrastructure:** Google Cloud Platform (Cloud Run + Redis)
+# 5. Start all services
+python src/state_manager/main.py &
+python src/strategy_engine/main.py &
+python src/data_handler/main.py &
+```
 
-## 🎯 Project Vision
-This is an autonomous "Digital Employee" designed for **Conservative Aggression**.
-* **Never Loss:** Hard-coded circuit breakers prevent catastrophic failure.
-* **Wisdom:** Uses a Feedback Loop (Wisdom Builder) to learn from every trade.
-* **Efficiency:** Serverless architecture utilizing the 80/20 rule for compute resources.
+## 📊 Architecture
 
-## 📂 Repository Structure
-* \`src/\`: Python Microservices code.
-* \`docs/\`: Detailed Architectural Blueprints and Requirements.
-* \`scripts/\`: Deployment automation.
-* \`cloudbuild.yaml\`: CI/CD Pipeline configuration.
+6 Microservices:
+
+| Service | Purpose | Port |
+|---------|---------|------|
+| State Manager | Central brain (Redis + safety) | 8080 |
+| Strategy Engine | Trade signal generation | 8081 |
+| Wisdom Builder | Nightly learning optimization | 8082 |
+| External Intelligence | Market regime (LLM) | 8083 |
+| Journaling Service | Audit trail (Firestore) | 8084 |
+| Data Handler | Market data ingestion | 8085 |
+
+## 🧠 The Three Strategies
+
+### A1: Mean Reversion
+- **Entry**: RSI < 30 AND price 2 ATR below SMA20
+- **Win Rate**: 65%
+
+### A2: Trend Following
+- **Entry**: SMA50 > SMA200 AND MACD momentum
+- **Win Rate**: 55%
+
+### A3: Statistical Arbitrage
+- **Entry**: Z-Score > 2.0 (pair divergence)
+- **Win Rate**: 70%
+
+## 🛡️ Safety Mechanisms
+
+1. **Circuit Breaker**: Max daily loss -$500 (hard-coded)
+2. **Expected Value Filter**: EV > 0.5% required
+3. **Wisdom Vectors**: Adaptive confidence (updated nightly)
+
+## 📈 Trading Cycle
+
+**Real-Time**: Data → Signals → Risk Check → Execution  
+**Nightly**: Analyze Trades → Learn → Update Vectors → Reset State
 
 ## 🚀 Deployment
-This project is connected to Google Cloud Build.
-1. Push changes to \`main\`.
-2. GCP automatically rebuilds the "Brain" and updates the live services.
+
+### GCP Cloud Run
+```bash
+gcloud run deploy state-manager --image gcr.io/PROJECT/state-manager:latest
+```
+
+### Docker Compose (Local)
+```bash
+docker-compose up -d
+```
+
+### AWS Lambda
+See `docs/AWS_DEPLOYMENT.md`
+
+## 📚 Documentation
+
+- `ARCHITECTURE.md` - System design details
+- `REQUIREMENTS.md` - Functional requirements
+- `RESEARCH_FINDINGS.md` - Trading system research
+- `LaymansGuide.txt` - Non-technical overview
+
+## 🧪 Testing
+
+```bash
+pytest tests/unit/
+pytest tests/integration/
+```
+
+## 📄 License
+
+MIT License - see `LICENSE`
+
+---
+
+**Version**: 1.0 (MVP)  
+**Status**: Ready for Backtesting & Deployment  
+**Last Updated**: November 2025

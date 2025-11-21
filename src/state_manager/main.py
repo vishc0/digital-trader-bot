@@ -1,143 +1,159 @@
-import os
-import redis
-import msgpack
-from flask import Flask, jsonify
+"""
+State Manager Flask API Service - The Central Brain
 
+Provides REST endpoints for other microservices to interact with the central brain.
+All critical operations use Redis + MsgPack for efficiency.
+"""
+
+import os
+import logging
+from datetime import datetime
+from flask import Flask, jsonify, request
+from state_manager import StateManager, CircuitBreakerOpen
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# Configuration
+PORT = int(os.environ.get("PORT", 8080))
+
+# Initialize Flask app
 app = Flask(__name__)
-REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
-# Robust connection with timeout
-r = redis.Redis(host=REDIS_HOST, port=6379, db=0, socket_connect_timeout=5)
+state_manager = None
 
-@app.route('/')
-def health():
+
+def init_app():
+    """Initialize State Manager on first request."""
+    global state_manager
     try:
-        r.ping()
-        return jsonify({"status": "healthy", "role": "Brain", "connected": True}), 200
+        state_manager = StateManager()
+        logger.info("State Manager initialized")
     except Exception as e:
-        return jsonify({"status": "unhealthy", "error": str(e)}), 500
+        logger.error(f"Failed to initialize State Manager: {e}")
+        raise
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
-***************************
 
-import redis
-import msgpack  # Efficient binary serialization (The 80/20 optimization)
-import time
-import json
-import os
+@app.before_request
+def before_request():
+    """Ensure state manager is initialized."""
+    if state_manager is None:
+        init_app()
 
-# --- CONFIGURATION (Injected by Environment) ---
-REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
-REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
-APP_ID = os.environ.get('APP_ID', 'algo_brain_v1')
 
-class CircuitBreakerOpen(Exception):
-    """Raised when the system attempts to trade while risk limits are breached."""
-    pass
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Health check endpoint."""
+    status = state_manager.get_health_status()
+    status_code = 200 if status['status'] == 'healthy' else 503
+    return jsonify(status), status_code
 
-class StateManager:
-    """
-    The Single Source of Truth.
-    
-    Design Principles:
-    1. Tight Coupling via Data: All services read/write to this, avoiding chatty HTTP chains.
-    2. Binary Protocol: Uses MsgPack for low latency/high throughput.
-    3. Safety First: Hard-coded logic checks (Circuit Breakers) embedded in the state layer.
-    """
 
-    def __init__(self):
-        # Connection pool for efficient resource usage
-        self.pool = redis.ConnectionPool(host=REDIS_HOST, port=REDIS_PORT, db=0)
-        self.redis = redis.Redis(connection_pool=self.pool)
-        
-        # Keys
-        self.K_CIRCUIT_BREAKER = f"{APP_ID}:risk:circuit_breaker"
-        self.K_STRATEGY_VECTORS = f"{APP_ID}:wisdom:vectors"
-        self.K_MARKET_STATE = f"{APP_ID}:market:state"
-        self.K_DAILY_PNL = f"{APP_ID}:finance:daily_pnl"
-
-    def _serialize(self, data):
-        """Compresses data using MsgPack (Efficiency optimization)."""
-        return msgpack.packb(data, use_bin_type=True)
-
-    def _deserialize(self, data):
-        if not data: return None
-        return msgpack.unpackb(data, raw=False)
-
-    # --- SAFETY LAYER (The "Never Loss" Mandate) ---
-
-    def check_circuit_breaker(self):
-        """
-        The absolute gatekeeper. If this returns False, NO trade can physically execute.
-        This protects against AI hallucinations or infinite loops.
-        """
-        status = self._deserialize(self.redis.get(self.K_CIRCUIT_BREAKER))
-        
-        if status and status.get('triggered', False):
-            raise CircuitBreakerOpen(f"SYSTEM HALTED: {status.get('reason')}")
-        
-        # Check Daily Loss Limit (Hard Coded Safety)
-        daily_pnl = float(self.redis.get(self.K_DAILY_PNL) or 0.0)
-        MAX_DAILY_LOSS = -500.00 # Example: $500 Max Loss
-        
-        if daily_pnl <= MAX_DAILY_LOSS:
-            self.trigger_circuit_breaker("Daily Loss Limit Hit")
-            raise CircuitBreakerOpen("Daily Loss Limit Hit")
-
-        return True
-
-    def trigger_circuit_breaker(self, reason):
-        """ pulls the plug on the system. """
-        print(f"!!! CRITICAL: TRIGGERING CIRCUIT BREAKER: {reason} !!!")
-        data = {'triggered': True, 'reason': reason, 'timestamp': time.time()}
-        self.redis.set(self.K_CIRCUIT_BREAKER, self._serialize(data))
-
-    def reset_system_state(self):
-        """Called manually or by Wisdom module after Nightly Review."""
-        self.redis.delete(self.K_CIRCUIT_BREAKER)
-        self.redis.set(self.K_DAILY_PNL, 0.0)
-
-    # --- WISDOM ACCESS (Vector Retrieval) ---
-
-    def get_strategy_vector(self, strategy_id):
-        """
-        Retrieves the 'Confidence Vector' for a strategy.
-        Default vector implies neutral confidence.
-        """
-        vectors = self._deserialize(self.redis.get(self.K_STRATEGY_VECTORS)) or {}
-        # Default: [Confidence, Volatility_Tolerance, Regime_Alignment]
-        return vectors.get(strategy_id, [0.5, 0.5, 0.5]) 
-
-    def update_market_state(self, snapshot):
-        """
-        Updates the shared 'consciousness' of the market.
-        Services read this instead of fetching external APIs (Cost Optimization).
-        """
-        # 1 Hour TTL (Time To Live) - data shouldn't be stale
-        self.redis.setex(self.K_MARKET_STATE, 3600, self._serialize(snapshot))
-
-    def get_market_state(self):
-        return self._deserialize(self.redis.get(self.K_MARKET_STATE))
-
-# --- DEMO USAGE ---
-if __name__ == "__main__":
-    brain = StateManager()
-    
-    # 1. Simulate a healthy state check
+@app.route('/circuit-breaker', methods=['GET'])
+def get_circuit_breaker():
+    """Check circuit breaker status."""
     try:
-        brain.check_circuit_breaker()
-        print("System Health: GREEN")
+        state_manager.check_circuit_breaker()
+        return jsonify({'status': 'NORMAL', 'trading_allowed': True}), 200
     except CircuitBreakerOpen as e:
-        print(f"System Health: RED - {e}")
+        return jsonify({'status': 'TRIPPED', 'trading_allowed': False, 'message': str(e)}), 200
 
-    # 2. Simulate a Market Update (Efficient Write)
-    market_data = {'AAPL': 185.50, 'VIX': 14.2, 'Regime': 'Bull'}
-    brain.update_market_state(market_data)
-    print("Market State Updated.")
 
-    # 3. Simulate a Catastrophic Loss
-    brain.redis.set(brain.K_DAILY_PNL, -600.00)
+@app.route('/circuit-breaker/trigger', methods=['POST'])
+def trigger_circuit_breaker():
+    """Trigger circuit breaker."""
+    data = request.get_json() or {}
+    reason = data.get('reason', 'Manual stop')
+    state_manager.trigger_circuit_breaker(reason)
+    return jsonify({'status': 'TRIGGERED', 'reason': reason}), 200
+
+
+@app.route('/circuit-breaker/reset', methods=['POST'])
+def reset_circuit_breaker():
+    """Reset circuit breaker."""
+    state_manager.reset_circuit_breaker()
+    return jsonify({'status': 'RESET'}), 200
+
+
+@app.route('/market-state', methods=['GET'])
+def get_market_state():
+    """Get market state."""
+    market_state = state_manager.get_market_state()
+    if market_state is None:
+        return jsonify({'error': 'Not available'}), 404
+    return jsonify(market_state), 200
+
+
+@app.route('/market-state', methods=['PUT'])
+def update_market_state():
+    """Update market state."""
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No data'}), 400
     try:
-        brain.check_circuit_breaker()
-    except CircuitBreakerOpen as e:
-        print(f"Safety Net Caught: {e}")
+        state_manager.update_market_state(data)
+        return jsonify({'status': 'updated'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/strategy-vector/<strategy_id>', methods=['GET'])
+def get_strategy_vector(strategy_id):
+    """Get strategy vector."""
+    vector = state_manager.get_strategy_vector(strategy_id)
+    return jsonify({'strategy_id': strategy_id, 'vector': vector}), 200
+
+
+@app.route('/strategy-vector/<strategy_id>', methods=['PUT'])
+def update_strategy_vector(strategy_id):
+    """Update strategy vector."""
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No data'}), 400
+    try:
+        state_manager.update_strategy_vector(strategy_id, data if isinstance(data, list) else data.values())
+        return jsonify({'status': 'updated'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/daily-pnl', methods=['GET'])
+def get_daily_pnl():
+    """Get daily PnL."""
+    pnl = state_manager.get_daily_pnl()
+    return jsonify({'daily_pnl': pnl}), 200
+
+
+@app.route('/daily-pnl', methods=['POST'])
+def update_daily_pnl():
+    """Update daily PnL."""
+    data = request.get_json() or {}
+    pnl_delta = data.get('pnl_delta', 0.0)
+    try:
+        state_manager.update_daily_pnl(pnl_delta)
+        return jsonify({'status': 'updated', 'new_pnl': state_manager.get_daily_pnl()}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/daily-pnl/reset', methods=['POST'])
+def reset_daily_pnl():
+    """Reset daily PnL."""
+    state_manager.reset_daily_pnl()
+    return jsonify({'status': 'reset'}), 200
+
+
+@app.errorhandler(Exception)
+def handle_error(error):
+    """Global error handler."""
+    logger.error(f"Error: {error}")
+    return jsonify({'error': str(error)}), 500
+
+
+if __name__ == '__main__':
+    logger.info(f"Starting State Manager on port {PORT}")
+    init_app()
+    app.run(host='0.0.0.0', port=PORT, debug=False, threaded=True)
