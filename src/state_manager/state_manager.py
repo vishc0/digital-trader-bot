@@ -81,6 +81,10 @@ class StateManager:
         self.K_DAILY_PNL = f"{APP_ID}:finance:daily_pnl"
         self.K_OPEN_TRADES = f"{APP_ID}:trades:open"
         self.K_SYSTEM_HEALTH = f"{APP_ID}:system:health"
+        # Live trading approval workflow
+        self.K_LIVE_ENABLE_REQUESTS = f"{APP_ID}:approvals:live_enable_requests"
+        self.K_LIVE_APPROVALS = f"{APP_ID}:approvals:live_approvals"
+        self.K_ENABLE_LIVE_TRADING = f"{APP_ID}:flags:enable_live_trading"
 
     def _serialize(self, data):
         """Serialize data to binary using MsgPack."""
@@ -279,6 +283,113 @@ class StateManager:
                 'error': str(e),
                 'timestamp': datetime.utcnow().isoformat()
             }
+
+    # --- LIVE TRADING APPROVAL WORKFLOW ---
+
+    def request_live_enable(self, requester_id, reason=""):
+        """
+        Request permission to enable live trading (2-operator approval required).
+        
+        Args:
+            requester_id (str): ID of operator requesting (e.g. email or user ID)
+            reason (str): Justification for enabling live mode
+            
+        Returns:
+            dict: Request details with request_id
+        """
+        request_id = str(int(time.time() * 1000))  # timestamp-based ID
+        request_data = {
+            'request_id': request_id,
+            'requester_id': requester_id,
+            'reason': reason,
+            'requested_at': datetime.utcnow().isoformat(),
+            'status': 'pending',
+            'approvals': []  # Will store list of approver IDs
+        }
+        
+        requests_list = self._deserialize(self.redis.get(self.K_LIVE_ENABLE_REQUESTS)) or {}
+        requests_list[request_id] = request_data
+        self.redis.set(self.K_LIVE_ENABLE_REQUESTS, self._serialize(requests_list))
+        
+        logger.info(f"Live enable request {request_id} from {requester_id}: {reason}")
+        return request_data
+
+    def approve_live_enable(self, request_id, approver_id):
+        """
+        Approve a live trading enable request. Requires 2 distinct approvals.
+        
+        Args:
+            request_id (str): Request ID from request_live_enable
+            approver_id (str): ID of operator approving
+            
+        Returns:
+            dict: Updated request status; if approved, sets ENABLE_LIVE_TRADING flag
+        """
+        requests_list = self._deserialize(self.redis.get(self.K_LIVE_ENABLE_REQUESTS)) or {}
+        request = requests_list.get(request_id)
+        
+        if not request:
+            raise ValueError(f"Request {request_id} not found")
+        
+        if request['status'] == 'approved':
+            raise ValueError(f"Request {request_id} already approved")
+        
+        # Add approval if not already approved by this user
+        approvals = request.get('approvals', [])
+        if approver_id not in approvals:
+            approvals.append(approver_id)
+        
+        request['approvals'] = approvals
+        
+        # If 2 or more distinct approvals, enable live mode
+        if len(approvals) >= 2:
+            request['status'] = 'approved'
+            request['approved_at'] = datetime.utcnow().isoformat()
+            request['approved_by'] = approvals
+            
+            # Set the live trading flag
+            flag_data = {
+                'enabled': True,
+                'request_id': request_id,
+                'approvers': approvals,
+                'enabled_at': datetime.utcnow().isoformat(),
+                'approval_ttl_hours': 24  # Re-approval needed after 24 hours
+            }
+            self.redis.setex(
+                self.K_ENABLE_LIVE_TRADING,
+                86400,  # 24-hour TTL
+                self._serialize(flag_data)
+            )
+            logger.critical(f"LIVE TRADING ENABLED via request {request_id} (approvers: {approvals})")
+        
+        requests_list[request_id] = request
+        self.redis.set(self.K_LIVE_ENABLE_REQUESTS, self._serialize(requests_list))
+        
+        return request
+
+    def is_live_trading_enabled(self):
+        """Check if live trading is currently enabled."""
+        flag = self._deserialize(self.redis.get(self.K_ENABLE_LIVE_TRADING))
+        return flag and flag.get('enabled', False)
+
+    def disable_live_trading(self):
+        """Immediately disable live trading (emergency revoke)."""
+        self.redis.delete(self.K_ENABLE_LIVE_TRADING)
+        logger.warning("Live trading disabled (manual revoke)")
+
+    def get_live_approval_status(self):
+        """Get current live trading approval status and pending requests."""
+        requests_list = self._deserialize(self.redis.get(self.K_LIVE_ENABLE_REQUESTS)) or {}
+        flag = self._deserialize(self.redis.get(self.K_ENABLE_LIVE_TRADING))
+        
+        return {
+            'live_trading_enabled': flag and flag.get('enabled', False),
+            'enabled_at': flag.get('enabled_at') if flag else None,
+            'approval_ttl_hours': flag.get('approval_ttl_hours') if flag else None,
+            'pending_requests': len([r for r in requests_list.values() if r['status'] == 'pending']),
+            'all_requests': requests_list
+        }
+
 
 
 # --- DEMO USAGE ---

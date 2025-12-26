@@ -131,6 +131,80 @@ services:
       timeout: 5s
       retries: 3
 
+  # Execution Manager - Order Placement (Paper/Live)
+  execution-manager:
+    build:
+      context: ./src/execution_manager
+      dockerfile: Dockerfile
+    ports:
+      - "8086:8086"
+    environment:
+      - PORT=8086
+      - EXECUTION_MODE=paper
+    depends_on:
+      - redis
+      - state-manager
+      - journaling-service
+    networks:
+      - trading-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8086/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # API Gateway - Service Orchestration
+  api-gateway:
+    build:
+      context: ./src/api_gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - STATE_MANAGER_URL=http://state-manager:8080
+      - STRATEGY_ENGINE_URL=http://strategy-engine:8081
+      - WISDOM_BUILDER_URL=http://wisdom-builder:8082
+      - EXTERNAL_INTEL_URL=http://external-intelligence:8083
+      - JOURNALING_URL=http://journaling-service:8084
+      - EXECUTION_URL=http://execution-manager:8086
+      - DATA_HANDLER_URL=http://data-handler:8085
+    depends_on:
+      - state-manager
+      - strategy-engine
+      - wisdom-builder
+      - external-intelligence
+      - journaling-service
+      - execution-manager
+      - data-handler
+    networks:
+      - trading-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Web UI - Operator Console (static build served by Nginx)
+  web-ui:
+    build:
+      context: ./src/web_ui
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    environment:
+      - PORT=80
+      - API_BASE_URL=http://api-gateway:8000
+    depends_on:
+      - api-gateway
+    networks:
+      - trading-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3000/health || true" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
 volumes:
   redis_data:
 

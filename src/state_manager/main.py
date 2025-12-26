@@ -146,6 +146,60 @@ def reset_daily_pnl():
     return jsonify({'status': 'reset'}), 200
 
 
+@app.route('/live-approval/request', methods=['POST'])
+def request_live_enable():
+    """Request permission to enable live trading (2-operator approval required)."""
+    data = request.get_json() or {}
+    requester_id = data.get('requester_id')
+    reason = data.get('reason', '')
+    
+    if not requester_id:
+        return jsonify({'error': 'requester_id required'}), 400
+    
+    try:
+        req = state_manager.request_live_enable(requester_id, reason)
+        return jsonify({'status': 'requested', 'request': req}), 200
+    except Exception as e:
+        logger.error(f"Error requesting live enable: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/live-approval/approve/<request_id>', methods=['POST'])
+def approve_live_enable(request_id):
+    """Approve a live enable request (second approval triggers enablement)."""
+    data = request.get_json() or {}
+    approver_id = data.get('approver_id')
+    
+    if not approver_id:
+        return jsonify({'error': 'approver_id required'}), 400
+    
+    try:
+        req = state_manager.approve_live_enable(request_id, approver_id)
+        return jsonify({
+            'status': 'ok',
+            'request_status': req['status'],
+            'approvals_count': len(req.get('approvals', [])),
+            'live_trading_enabled': state_manager.is_live_trading_enabled()
+        }), 200
+    except Exception as e:
+        logger.error(f"Error approving live enable: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/live-approval/status', methods=['GET'])
+def get_live_approval_status():
+    """Get current live trading approval status and pending requests."""
+    status = state_manager.get_live_approval_status()
+    return jsonify(status), 200
+
+
+@app.route('/live-approval/disable', methods=['POST'])
+def disable_live():
+    """Immediately disable live trading (emergency revoke)."""
+    state_manager.disable_live_trading()
+    return jsonify({'status': 'live_trading_disabled'}), 200
+
+
 @app.errorhandler(Exception)
 def handle_error(error):
     """Global error handler."""

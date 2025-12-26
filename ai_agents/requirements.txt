@@ -1,0 +1,8 @@
+# Microsoft Agent Framework (--pre flag is REQUIRED while in preview)
+agent-framework-azure-ai
+
+# Additional dependencies
+python-dotenv
+pydantic
+aiohttp
+requests

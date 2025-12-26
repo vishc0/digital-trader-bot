@@ -1,0 +1,29 @@
+{
+    "users": [
+        {
+            "username": "operator1",
+            "password": "operatorpass",
+            "roles": [
+                "operator"
+            ],
+            "display_name": "Operator One"
+        },
+        {
+            "username": "admin1",
+            "password": "adminpass",
+            "roles": [
+                "admin",
+                "operator"
+            ],
+            "display_name": "Administrator"
+        },
+        {
+            "username": "trader1",
+            "password": "traderpass",
+            "roles": [
+                "trader"
+            ],
+            "display_name": "Trader One"
+        }
+    ]
+}

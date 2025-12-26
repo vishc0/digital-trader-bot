@@ -1,0 +1,51 @@
+5 iterative SDLC cycles will be followed to develop components in this plarform: 
+Stage 1: 
+- skeleton code will be completed. 
+- functional flow will be created, reviewed against requirements and hardedned. 
+- additional modules will be discovered and added to the platfrom to provide fulfilment of functionality as per the requirements. 
+Stage 2: 
+- each module will be developed in isolation and tested using unit tests. 
+- modules will be integrated into the platform and integration tests will be performed.
+- Adapters will be developed and integrated to the platfrom to connect to external systems (exchanges, data providers etc)
+- code review will be performed in entirity to see if there are any grey or gaps in the code that needs to be implemented. 
+- if there are gaps found we will go back to stage one nad try to develop those cosre components/modules.
+Stage 3: 
+- all components will be integration tested together to ensure the platform works as expected.
+- performance testing will be performed to see if the platform meets the non-functional requirements.
+- we will create documentation for the platform including API docs, user guides and developer guides.
+- we will create build and deploy templates for all the components. 
+- we will create a framework that will 
+    take feedback from the chatbot screen and refine that into requirements. 
+    these requirements will be fed into ai to generate code based and run through these 5 stages iterastively to build out the platform further.
+    this stage will also create small small Improvement cycles that will be tracked in imporvements section. 
+Stage 4: 
+- platform will be deployed to production environment using CI/CD pipelines.
+- platform monitoring will be setup and monitoring alerts will be configured. 
+- user training will be provided to ensure users are able to use the platform effectively.
+- if need be we will revisit code to instrument telemetry and observability into the platform.
+- feedback will be collected from users to see if there are any issues or improvements that can be made.
+
+Stage 5:
+- support and maintenance routines will be established to ensure the platform remains operational and up-to-date.
+- we will implement a framework to cotinuously collect feed back for additional feasures and improvements. 
+- we will have a away to identify isues and collect information and run bug fix cycles to resove them. 
+- we will perform 5 Release cycles with these 5 stages process to improve the system and make it more robust and resilient. 
+- we will ensure that each release is well documented and communicated to all stakeholders.
+
+as mush as possible we will include automation, Repetable process to do the following for every Enhancement or bug that needs to be addressed. 
+ - convert feedback to requirements. 
+ - using AI to geenrate code, review code, test code and document code. 
+ - use AI to perform all SDLC cycle of devleopment, create and miantain CICD pipelines to deploy components. 
+ - use AI to troubleshoot based on the logs and test cases for the components. 
+ - inject telemetry and observability into components to mae them more monitroable and manageable. 
+ - inject securitya dn best practices into the components to make them more secure and resilient.
+ - use workflows if needed to automate the entire process of devleopment, deployment, testing and monitoring.
+- we will use AI to create test cases, perform testing and document the testing process.
+- we will use AI to create and maintain documentation for the platform including API docs, user guides and developer guides.
+- we will use AI to create and maintain CI/CD pipelines for the platform.
+- we will use AI to create and maintain monitoring and alerting for the platform.
+- we will use AI to create and maintain security and best practices for the platform.
+
+All the USer related information preferences must be parameterized into one file for simplicity and easy maintenace. 
+All the secrets, API keys must be stored in this file and not in code repos.
+all the metadata about trading strategies and other vital information must be seperated from code and stored in databases. 
