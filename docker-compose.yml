@@ -20,7 +20,7 @@ services:
   # State Manager - The Brain
   state-manager:
     build:
-      context: ./src/state_manager
+      context: ./platform/backend/state_manager
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
@@ -43,7 +43,7 @@ services:
   # Data Handler - Market Data
   data-handler:
     build:
-      context: ./src/data_handler
+      context: ./platform/backend/data_handler
       dockerfile: Dockerfile
     ports:
       - "8085:8085"
@@ -60,7 +60,7 @@ services:
   # Strategy Engine - Signal Generation
   strategy-engine:
     build:
-      context: ./src/strategy_engine
+      context: ./platform/backend/strategy_engine
       dockerfile: Dockerfile
     ports:
       - "8081:8081"
@@ -80,7 +80,7 @@ services:
   # Wisdom Builder - Learning Engine
   wisdom-builder:
     build:
-      context: ./src/wisdom_builder
+      context: ./platform/backend/wisdom_builder
       dockerfile: Dockerfile
     ports:
       - "8082:8082"
@@ -99,7 +99,7 @@ services:
   # External Intelligence - LLM/Sentiment
   external-intelligence:
     build:
-      context: ./src/external_intelligence
+      context: ./platform/backend/external_intelligence
       dockerfile: Dockerfile
     ports:
       - "8083:8083"
@@ -117,7 +117,7 @@ services:
   # Journaling Service - Audit Trail
   journaling-service:
     build:
-      context: ./src/journaling_service
+      context: ./platform/backend/journaling_service
       dockerfile: Dockerfile
     ports:
       - "8084:8084"
@@ -131,10 +131,10 @@ services:
       timeout: 5s
       retries: 3
 
-  # Execution Manager - Order Placement (Paper/Live)
+  # Execution Manager (Broker Connector)
   execution-manager:
     build:
-      context: ./src/execution_manager
+      context: ./platform/backend/execution_manager
       dockerfile: Dockerfile
     ports:
       - "8086:8086"
@@ -156,7 +156,7 @@ services:
   # API Gateway - Service Orchestration
   api-gateway:
     build:
-      context: ./src/api_gateway
+      context: ./platform/gateway
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
@@ -185,10 +185,10 @@ services:
       timeout: 5s
       retries: 3
 
-  # Web UI - Operator Console (static build served by Nginx)
+  # Web UI - Frontend
   web-ui:
     build:
-      context: ./src/web_ui
+      context: ./platform/frontend
       dockerfile: Dockerfile
     ports:
       - "3000:80"
@@ -207,7 +207,6 @@ services:
 
 volumes:
   redis_data:
-
 
 networks:
   trading-network:

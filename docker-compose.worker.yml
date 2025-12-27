@@ -1,0 +1,51 @@
+version: '3.8'
+
+# [WORKER NODE] - The Muscle
+# Run this on your secondary machine (Node 2)
+# Needs .env file with PRIMARY_NODE_IP set to Node 1's Tailscale IP
+
+services:
+  # 1. Strategy Engine (CPU Heavy)
+  strategy-engine:
+    build:
+      context: ./platform/backend/strategy_engine
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOST=${PRIMARY_NODE_IP} # Connects to Primary Redis
+      - REDIS_PORT=6379
+      - STATE_MANAGER_URL=http://${PRIMARY_NODE_IP}:8080
+      - DATA_HANDLER_URL=http://${PRIMARY_NODE_IP}:8085
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # 2. Wisdom Builder (AI Training - Very CPU Heavy)
+  wisdom-builder:
+    build:
+      context: ./platform/backend/wisdom_builder
+    ports:
+      - "8082:8082"
+    environment:
+      - REDIS_HOST=${PRIMARY_NODE_IP}
+      - STATE_MANAGER_URL=http://${PRIMARY_NODE_IP}:8080
+
+  # 3. External Intelligence (LLM Gateway)
+  external-intelligence:
+    build:
+      context: ./platform/backend/external_intelligence
+    ports:
+      - "8083:8083"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY} # Secure this!
+      - REDIS_HOST=${PRIMARY_NODE_IP}
+
+  # 4. Execution Manager (Broker Connection)
+  execution-manager:
+    build:
+      context: ./platform/backend/execution_manager
+    ports:
+      - "8086:8086"
+    environment:
+      - REDIS_HOST=${PRIMARY_NODE_IP}
+      - STATE_MANAGER_URL=http://${PRIMARY_NODE_IP}:8080
+      - EXECUTION_MODE=paper

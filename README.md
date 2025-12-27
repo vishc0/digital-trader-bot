@@ -1,119 +1,60 @@
-# Digital Trader Bot - MVP (Level 5 Maturity)
+# Digital Trader Bot - Platform IQ
 
-> An autonomous trading platform that hunts for profit while maintaining strict loss controls. Built for **conservative aggression** - aggressive profit-seeking tempered by hard-coded safety mechanisms.
+> **The AI-Driven High-Frequency Trading Platform**
 
-## 🎯 Quick Overview
+[![Platform Status](https://img.shields.io/badge/Platform-Active-success)](./REQUIREMENTS.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**What it Does:**
-- Generates trade signals using 3 strategies (Mean Reversion, Trend Following, Stat Arb)
-- Learns from every trade via nightly optimization (Wisdom Builder)
-- Detects market regime changes using AI/LLM
-- Enforces hard-coded circuit breakers to prevent catastrophic losses
-- Maintains immutable audit trail of all decisions
+## ⚡ Overview
+
+Digital Trader Bot is a comprehensive algorithmic trading platform designed for **Maximum Profit** through **AI Integration** and **Seamless Execution**. It connects to Top 10 global brokers and uses advanced reinforcement learning (Wisdom Builder) to adaptively optimize strategies.
+
+## 📂 Platform Structure
+
+The project is organized into a scalable "Platform" architecture:
+
+| Directory | Layer | Purpose |
+|-----------|-------|---------|
+| `platform/frontend` | **Control Plane** | Real-time Dashboard & Strategy Management |
+| `platform/gateway` | **Middleware** | Unified API Gateway (Websockets/REST) |
+| `platform/backend/core` | **The Brain** | Strategy Engine, State Manager, AI Wisdom |
+| `platform/backend/data` | **Memory** | Market Data Ingestion & Immutable Journaling |
+| `platform/backend/connectors` | **The Hands** | Broker Integrations (IBKR, Alpaca, etc.) |
 
 ## 🚀 Quick Start
 
 ### Prerequisites
+
+- Docker & Docker Compose
 - Python 3.10+
-- Redis 7+
-- Docker (optional)
+- Node.js 18+
 
-### Local Setup (3 minutes)
+### Launch the Platform
 
 ```bash
-# 1. Clone and enter directory
-git clone https://github.com/vishc0/digital-trader-bot.git
-cd digital-trader-bot
+# 1. Start all services
+docker-compose up -d --build
 
-# 2. Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+# 2. Access the Dashboard
+# Open http://localhost:3000
 
-# 3. Install dependencies
-pip install -r requirements.txt
-
-# 4. Start Redis
-docker run -d -p 6379:6379 redis:7
-
-# 5. Start all services
-python src/state_manager/main.py &
-python src/strategy_engine/main.py &
-python src/data_handler/main.py &
+# 3. Check System Health
+curl http://localhost:8000/health
 ```
 
-## 📊 Architecture
+## 🧠 AI & Strategies
 
-6 Microservices:
-
-| Service | Purpose | Port |
-|---------|---------|------|
-| State Manager | Central brain (Redis + safety) | 8080 |
-| Strategy Engine | Trade signal generation | 8081 |
-| Wisdom Builder | Nightly learning optimization | 8082 |
-| External Intelligence | Market regime (LLM) | 8083 |
-| Journaling Service | Audit trail (Firestore) | 8084 |
-| Data Handler | Market data ingestion | 8085 |
-
-## 🧠 The Three Strategies
-
-### A1: Mean Reversion
-- **Entry**: RSI < 30 AND price 2 ATR below SMA20
-- **Win Rate**: 65%
-
-### A2: Trend Following
-- **Entry**: SMA50 > SMA200 AND MACD momentum
-- **Win Rate**: 55%
-
-### A3: Statistical Arbitrage
-- **Entry**: Z-Score > 2.0 (pair divergence)
-- **Win Rate**: 70%
-
-## 🛡️ Safety Mechanisms
-
-1. **Circuit Breaker**: Max daily loss -$500 (hard-coded)
-2. **Expected Value Filter**: EV > 0.5% required
-3. **Wisdom Vectors**: Adaptive confidence (updated nightly)
-
-## 📈 Trading Cycle
-
-**Real-Time**: Data → Signals → Risk Check → Execution  
-**Nightly**: Analyze Trades → Learn → Update Vectors → Reset State
-
-## 🚀 Deployment
-
-### GCP Cloud Run
-```bash
-gcloud run deploy state-manager --image gcr.io/PROJECT/state-manager:latest
-```
-
-### Docker Compose (Local)
-```bash
-docker-compose up -d
-```
-
-### AWS Lambda
-See `docs/AWS_DEPLOYMENT.md`
+- **Wisdom Builder**: Learns from every trade to improve future performance.
+- **External Intelligence**: Scans news and sentiment to detect market regimes.
+- **Circuit Breakers**: Hard-coded safety to prevent catastrophic loss.
 
 ## 📚 Documentation
 
-- `ARCHITECTURE.md` - System design details
-- `REQUIREMENTS.md` - Functional requirements
-- `RESEARCH_FINDINGS.md` - Trading system research
-- `LaymansGuide.txt` - Non-technical overview
-
-## 🧪 Testing
-
-```bash
-pytest tests/unit/
-pytest tests/integration/
-```
-
-## 📄 License
-
-MIT License - see `LICENSE`
+- [REQUIREMENTS.md](./REQUIREMENTS.md) - Platform Vision & Broker Targets
+- [ARCHITECTURE.md](./ARCHITECTURE.md) - Technical Design & Data Flow
+- [DEVELOPMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) - How to contribute
 
 ---
 
-**Version**: 1.0 (MVP)  
-**Status**: Ready for Backtesting & Deployment  
-**Last Updated**: November 2025
+**Version**: 2.0 (Platform Era)
+**License**: MIT

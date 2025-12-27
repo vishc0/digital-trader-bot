@@ -2,7 +2,29 @@
 
 A powerful multi-agent system designed to help solopreneurs with business strategy, research, development, and operations.
 
-## 🚀 Quick Start
+## 🎯 Two Ways to Access Your AI Agents
+
+### 1. GitHub Copilot Agents (Recommended for Quick Use)
+
+**Just created!** Access 7 specialized AI agents anywhere in GitHub Copilot Chat using `@agent-name`:
+
+- 💼 `@business-strategist` - Business strategy and market analysis
+- 🔬 `@research-analyst` - Market research and competitive intelligence  
+- 💻 `@code-architect` - Software development and automation
+- 📊 `@product-strategist` - Product roadmaps and feature prioritization
+- 📢 `@growth-marketer` - Marketing strategy and customer acquisition
+- 💰 `@sales-ops-expert` - Sales processes and operations
+- 🎯 `@business-orchestrator` - Multi-agent coordination
+
+**➡️ [See GitHub Copilot Agents Setup](.github/COPILOT_AGENTS_SETUP.md)**
+
+### 2. Python Agent Framework (For Deep Analysis)
+
+Run comprehensive multi-agent workflows with the Python system below.
+
+---
+
+## 🚀 Python Agents Quick Start
 
 ### Prerequisites
 
