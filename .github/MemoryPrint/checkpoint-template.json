@@ -1,0 +1,11 @@
+{
+  "ts": "YYYY-MM-DDTHH:MM:SSZ",
+  "context_id": "short-stable-id",
+  "change_type": "planning|architecture|delivery|implementation|deployment|troubleshooting|governance|strategy|observability|risk|broker",
+  "scope": ["module-or-workflow"],
+  "summary": ["short durable fact 1", "short durable fact 2"],
+  "decisions": ["decision 1"],
+  "risks": ["risk 1"],
+  "next": ["next action 1"],
+  "source": "agent-or-human"
+}

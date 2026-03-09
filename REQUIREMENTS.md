@@ -1,6 +1,14 @@
 # Digital Trader Bot - Platform Requirements
 >
-> **Vision**: An AI-driven, high-frequency trading platform capable of integrating with the top 10 global brokers to maximize profit through adaptive strategies.
+> **Vision**: An AI-assisted trading platform that helps a human operator monitor portfolios, evaluate trade ideas, execute approved trades safely, and continuously improve with disciplined AI usage.
+
+## 0. Primary goals
+
+1. Safety before speed.
+2. Token efficiency in all AI-enabled workflows.
+3. Modular independently deployable services.
+4. Paper-first validation before supervised live trading.
+5. Full auditability for recommendations, approvals, and orders.
 
 ## 1. Top 10 Broker Integrations (Target)
 
@@ -21,8 +29,16 @@ The platform must support modular connectors for:
 
 ### Frontend (Control Plane)
 
+Portfolio Page: 
+- Portfolio summary of all the accounts and holdings in account. A single indicator to take action on certain assets.
+- when actions is clicked it takes to recommendations page where it tells me what is the recommendation for that holding
+- Mintain multiple Watch lists and perform analysis on each of these tickers to provide recomendations. 
+- for each stock, apply strategies and come up with recomendations.
 - Real-time dashboard ensuring "Maximum Profit" visibility.
-- Manual override controls (Kill Switch).
+- evaluating the original exit criteria, evaluate the actual movement of the stock and modify the exit strategy 
+- scrape various internet bogs posts and tradinv view authors and ohter leading strategies websites to underatnd and documentthose stratgies.
+
+ - Manual override controls (Kill Switch).
 - AI Insight visualization (Sentiment, Regime).
 
 ### Middleware & Gateway

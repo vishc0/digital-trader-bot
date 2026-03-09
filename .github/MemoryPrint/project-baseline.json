@@ -1,0 +1,48 @@
+{
+  "memory_version": 1,
+  "project_id": "digital-trader-bot",
+  "context_id": "baseline-2026-03-08",
+  "vision": "AI-assisted trading platform for portfolio monitoring, trade evaluation, supervised execution, and continuous improvement.",
+  "primary_goals": [
+    "safety_before_speed",
+    "token_efficiency",
+    "modular_services",
+    "paper_first_validation",
+    "full_auditability"
+  ],
+  "delivery_strategy": {
+    "mvp": "built_in_paper_trading_account",
+    "phase_2": "fidelity_market_account_integration"
+  },
+  "non_negotiables": [
+    "human_approval_for_live_execution",
+    "no_policy_evasion",
+    "ai_separate_from_hard_controls",
+    "observability_baked_in",
+    "memoryprint_required"
+  ],
+  "core_modules": [
+    "frontend",
+    "gateway",
+    "state_manager",
+    "strategy_engine",
+    "execution_manager",
+    "data_handler",
+    "journaling_service",
+    "wisdom_builder",
+    "external_intelligence"
+  ],
+  "current_truth": {
+    "fidelity": "mock_only",
+    "market_data": "twelve_data_with_mock_fallback",
+    "journaling": "sqlite_backed_for_mvp",
+    "observability": "needs_module_and_gui_bake_in"
+  },
+  "deployment_targets": ["local", "aws", "gcp"],
+  "memory_policy": {
+    "folder": ".github/MemoryPrint",
+    "formats": ["json", "jsonl"],
+    "read_before_major_work": true,
+    "write_after_material_change": true
+  }
+}

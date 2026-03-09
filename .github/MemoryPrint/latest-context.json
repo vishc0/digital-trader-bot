@@ -1,0 +1,50 @@
+{
+  "memory_version": 1,
+  "context_id": "current-2026-03-08",
+  "last_updated": "2026-03-08T00:00:00Z",
+  "active_priorities": [
+    "strengthen_agent_system",
+    "standardize_prompts",
+    "define_architecture_and_delivery_path",
+    "bake_observability_into_modules_and_gui",
+    "prepare_for_local_aws_gcp_deployment",
+    "complete_pre_kickoff_gap_review",
+    "implement_mvp_as_builtin_paper_trading",
+    "adopt_sqlite_journaling_across_workflows"
+  ],
+  "active_decisions": [
+    "all_project_agents_must_use_memoryprint",
+    "memoryprint_must_be_compact_machine_readable_and_low_token",
+    "json_and_jsonl_are_the_default_memory_formats",
+    "observability_must_be_visible_in_gui_components",
+    "mvp_is_builtin_paper_trading_account",
+    "phase_2_is_fidelity_market_accounts",
+    "mvp_journal_store_is_sqlite_event_store",
+    "mvp_market_data_path_is_free_api_provider",
+    "mvp_market_data_provider_is_twelve_data"
+  ],
+  "open_gaps": [
+    "real_broker_integration_missing",
+    "canonical_domain_models_need_refinement",
+    "cloud_deployment_design_not_finalized",
+    "journal_projection_queries_need_expansion",
+    "market_data_rate_limit_and_config_handling_need_hardening"
+  ],
+  "agent_state": {
+    "ai-platform-orchestrator": "expanded",
+    "trading-system-architect": "expanded",
+    "broker-integration-engineer": "expanded",
+    "quant-strategy-analyst": "expanded",
+    "risk-compliance-guardian": "expanded",
+    "observability-sre": "expanded",
+    "delivery-lead": "expanded"
+  },
+  "next_best_actions": [
+    "review docs/KICKOFF_REVIEW.md",
+    "review docs/MVP_DOMAIN_CONTRACTS.md",
+    "wire services to canonical journal event shape",
+    "wire strategy workflows to Twelve Data-backed snapshots",
+    "refine architecture against current repo",
+    "define implementation sequence for first platform slice"
+  ]
+}

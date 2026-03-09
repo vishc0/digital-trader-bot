@@ -20,7 +20,11 @@ handler = DataHandler()
 @app.route('/health', methods=['GET'])
 def health():
     """Health check endpoint."""
-    return jsonify({'status': 'healthy', 'service': 'data-handler'}), 200
+    return jsonify({
+        'status': 'healthy',
+        'service': 'data-handler',
+        'provider_status': handler.get_provider_status()
+    }), 200
 
 
 @app.route('/historical/<ticker>', methods=['GET'])
@@ -79,5 +83,6 @@ def get_snapshot():
 
 if __name__ == '__main__':
     logger.info(f"Starting Data Handler on port {PORT}")
-    handler.generate_mock_historical_data()  # Pre-load data
+    if handler.market_data_provider != 'twelve_data' or not handler.api_key_configured:
+        handler.generate_mock_historical_data()  # Pre-load data when real provider is unavailable
     app.run(host='0.0.0.0', port=PORT, debug=False)

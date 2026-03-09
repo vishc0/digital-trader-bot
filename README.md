@@ -7,7 +7,7 @@
 
 ## ⚡ Overview
 
-Digital Trader Bot is a comprehensive algorithmic trading platform designed for **Maximum Profit** through **AI Integration** and **Seamless Execution**. It connects to Top 10 global brokers and uses advanced reinforcement learning (Wisdom Builder) to adaptively optimize strategies.
+Digital Trader Bot is an AI-assisted trading platform for **safe portfolio monitoring, trade evaluation, supervised execution, and post-trade learning**. Token efficiency is treated as a first-class requirement for every AI workflow.
 
 ## 📂 Platform Structure
 
@@ -50,9 +50,10 @@ curl http://localhost:8000/health
 
 ## 📚 Documentation
 
-- [REQUIREMENTS.md](./REQUIREMENTS.md) - Platform Vision & Broker Targets
-- [ARCHITECTURE.md](./ARCHITECTURE.md) - Technical Design & Data Flow
-- [DEVELOPMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) - How to contribute
+- [REQUIREMENTS.md](./REQUIREMENTS.md) - Platform vision and broker targets
+- [docs/ai-partner/README.md](./docs/ai-partner/README.md) - AI partner operating model, requirements, and roles
+- [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) - Technical design and data flow
+- [docs/DEPLOYMENT_GUIDE.md](./docs/DEPLOYMENT_GUIDE.md) - How to contribute
 
 ---
 

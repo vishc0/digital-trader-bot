@@ -20,7 +20,12 @@ journal = JournalingService()
 @app.route('/health', methods=['GET'])
 def health():
     """Health check endpoint."""
-    return jsonify({'status': 'healthy', 'service': 'journaling-service'}), 200
+    return jsonify({
+        'status': 'healthy',
+        'service': 'journaling-service',
+        'backend': 'sqlite',
+        'db_path': journal.db_path
+    }), 200
 
 
 @app.route('/trade-event', methods=['POST'])
@@ -77,6 +82,18 @@ def log_wisdom_adjustment():
         return jsonify({'status': 'logged'}), 200
     except Exception as e:
         logger.error(f"Error logging adjustment: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/system-health', methods=['POST'])
+def log_system_health():
+    """Log a system health snapshot."""
+    data = request.get_json() or {}
+    try:
+        health_id = journal.log_system_health(data.get('status', data))
+        return jsonify({'status': 'logged', 'health_id': health_id}), 200
+    except Exception as e:
+        logger.error(f"Error logging system health: {e}")
         return jsonify({'error': str(e)}), 500
 
 
