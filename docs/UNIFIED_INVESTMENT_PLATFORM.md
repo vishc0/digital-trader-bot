@@ -58,3 +58,61 @@ State transitions: RESEARCH -> PROPOSED -> APPROVED -> PLACED -> FILLED; REJECTE
 
 ## Phased delivery
 P0 inventory dependencies, secret handling and existing job definitions; baseline tests. P1 data adapters, evidence schema, accounts and decision ledger. P2 existing Growth Rotation scorecard/dashboard integration. P3 swing/quant research and backtest connectors. P4 scheduler, model routing evaluation and observable production hardening. Each phase requires tests, backout, budget ceiling, and human signoff.
+
+
+## Full-service investment and trading product scope (2026-10-20 expansion)
+
+### Unified domain services
+| Service | Required capabilities | Decision outputs |
+| --- | --- | --- |
+| Security master and corporate actions | Tickers, identifiers, exchanges, asset class, delistings, splits, dividends, mergers, point-in-time history | Canonical security and adjusted time series |
+| Market intelligence | Quote timestamps, OHLCV, technical indicators, liquidity, spreads, volatility, breadth, correlation, regime | Market context with stale-data gate |
+| Fundamentals and valuation | Standardized financials, peer multiples, DCF assumptions, returns on capital, earnings quality, revisions | Valuation ranges and uncertainty |
+| Earnings intelligence | Calendar, consensus estimates, reported figures, surprise, guidance, transcripts, call Q&A, subsequent revisions | Earnings event brief, change versus thesis |
+| News/event intelligence | Dated primary releases, secondary context, deduplication, entity attribution, novelty/materiality, source credibility | Event cards linked to revenue/cost/margin and risk |
+| Analyst intelligence | Rating/target changes with firm/analyst/as-of dates, consensus and dispersion, revision history, historical forecast quality, conflicts and methodology | Contextual analyst view, never buy/sell solely on target |
+| Macro and sector intelligence | Rate curve, inflation, employment, currency, energy, commodity drivers, sector leadership/flows, factor exposure, supply chains | Regime and sector allocation diagnostics |
+| Screening and watchlists | Fundamental growth/value/quality, relative strength, trend, earnings windows, scenario constraints | Ranked research queue; saved filters |
+| Portfolio management | Multi-account positions, cash/settlement, contributions, dividends, cost basis when accessible, targets, drift, exposure, rebalance candidates | Account-level holdings and policy-aware suggestions |
+| Risk and scenario | Position/sector/theme concentration, look-through overlaps, drawdown, VaR with assumptions, stress tests, liquidity, correlation | Breach alerts and mitigation alternatives |
+| Strategy research/backtesting | Hypothesis registry, lagged features, walk-forward, holdout, costs, survivorship bias, leakage tests | Research reports and promotion gates |
+| Trade planning and execution tracking | Orders proposed vs approved vs placed vs filled; taxes/account restrictions; slippage, fees and fill reconciliation | Human-reviewed trade plan, audit trail |
+| Performance and attribution | Time-weighted and money-weighted returns, corporate actions, benchmark total return, sector/factor/decision attribution | Verified performance and learning loop |
+| Jobs and governance | Workflow dependencies, success/SLA, data coverage, idempotence, model-cost telemetry, secrets, role access, logs | Run health, alerting, replay and audit |
+
+### Product surfaces and workflows
+- **Home:** multi-account net value and allocations, job health, today's market regime, priority earnings/events, pending decisions.
+- **Security 360:** price and volume, financial history, valuation, earnings surprise and guidance timeline, sourced news timeline, analyst revision timeline, industry peers, bull/base/bear case, risks, portfolio impact.
+- **Sector 360:** performance/breadth and valuations; macro drivers, capital expenditure, supplier/customer chain, constituent overlap and prospective regime shifts.
+- **Portfolio 360:** per-account holdings, SPAXX/cash vs securities, realized/unrealized P&L only when data supports it, TWR/MWR where appropriate, dividend and contribution tracking, sector/theme/country/factor exposure, benchmarks, target versus actual, concentration, available funds, rebalance recommendations ranked by benefit, risk and transaction cost.
+- **Earnings Workbench:** pre-earnings expectations; post-earnings actual versus consensus and own thesis; revisions to valuation and watchlist status; account-specific earnings risk.
+- **Decision Center:** candidate -> portfolio-fit analysis -> alternatives -> risks -> proposal -> owner approval -> manual execution confirmation -> review.
+- **Strategy Lab:** separated long-term, swing, and quantitative experiments with reproducible data snapshot IDs and out-of-sample comparison.
+- **Ops Console:** schedules, freshness, provider coverage, model routing, prompt/version, cost per report, failures and replay.
+
+### Portfolio suggestion engine
+1. Independently evaluate security quality, valuation and catalyst; retain unsupported inputs as unknown.
+2. Read **the relevant account's** current positions, cash, constraints, tax treatment, approved strategy targets, contribution/withdrawal plan and pending transactions. If missing, generate diagnostic advice only, not trade-ready sizing.
+3. Calculate holdings overlap across sectors and themes (e.g., AI chips, cloud platforms, AI-powered utilities), correlations, downside scenario exposure, cash buffer and transaction costs. Compare with alternatives: hold, add, trim, exit, reallocate and do nothing.
+4. Rank **account-specific** suggestions on expected thesis merit, incremental diversification, concentration, opportunity cost, valuation, liquidity, tax/account rules and uncertainty. Show what evidence would invalidate each idea.
+5. Produce proposal with account, symbol, snapshot, proposed dollar/share amounts only when verified, estimated post-trade weight, risk gates, thesis, downside scenario, source timestamps, expiry and required approval.
+6. Require explicit human signoff for every order and external broker confirmation for filled status; preserve broker execution integrations disabled by default.
+
+### Data model — minimum additional entities
+`security_master, market_observation, corporate_action, fiscal_period, estimate_consensus, estimate_revision, earnings_event, transcript_segment, analyst_action, news_event, source_evidence, macro_observation, sector_snapshot, account, portfolio_snapshot, lot_optional, cash_ledger, benchmark_series, investment_thesis, scenario, strategy_version, signal_observation, model_run, job_run, proposal, order_tracking, fill_confirmation, attribution_run`.
+Every fact carries observed_at, effective_at, source_published_at (where relevant), ingested_at, provider, immutable evidence reference, quality status, and revisions/version history. No single current-state row should overwrite point-in-time research history.
+
+### Prioritized delivery order
+- **Release 1: Portfolio and observability first.** Read-only separate Fidelity account holdings/cash, snapshot quality checks, Security 360 skeleton, news/earnings calendar, decision ledger and dashboard.
+- **Release 2: Research intelligence.** Analyst actions, earnings vs consensus, sourced news and sector/macro comparisons, scoring rubric, company research cards.
+- **Release 3: Portfolio guidance.** Risk exposures, benchmark-adjusted attribution, policy-aware portfolio-fit scoring, proposed rebalances and manual approval records.
+- **Release 4: Strategy lab.** Swing/quant experimentation, rigorous backtests, scenario validation, paper trading only.
+- **Release 5: Operational hardening.** Workflow scheduler, provider fallbacks, model evaluation, latency/cost budgets, integration tests, job SLA dashboards.
+
+### Safety, evidence and financial fidelity
+- Analyst ratings are opinions, not verified expected returns. Track dates and historical accuracy when licensing/data supports it.
+- Historical price and earnings features must be point-in-time; do not train on future revisions.
+- LLMs never calculate final portfolio values, fill prices or risk-limit compliance without deterministic independent checks.
+- Paid data licenses, redistribution conditions, quotas, terms and audit requirements are deployment prerequisites.
+- Portfolio analysis in custodial Roth accounts must respect account/custodian rules and cannot infer trading authority.
+- Clarify whether capabilities are prototyped, tested, deployed and operating; documents alone do not count as deployment.
